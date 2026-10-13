@@ -1,0 +1,1 @@
+Missing golden output: /solution/golden_outputs/output_variables.json

@@ -1,0 +1,916 @@
+{
+  "task_id": "Task-11-Healthcare-Pleural-Effusion",
+  "reward": 0.96,
+  "summary": {
+    "total_verifiers": 17,
+    "passed": 16,
+    "failed": 1,
+    "errored": 0,
+    "total_weight": 1.0,
+    "passed_weight": 0.96
+  },
+  "assertion_results": [
+    {
+      "name": "v1",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the clinical note is organized as a usable SOAP note rather than an unstructured narrative.",
+          "why_justification": "SOAP structure is central to the requested medical-file documentation and makes the note scannable for the care team.",
+          "tag": "clinical_note_structure",
+          "weight": 0.04,
+          "grading_role": "process",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the clinical note contains clearly identifiable SOAP sections for Subjective, Objective, Assessment, and Plan, even if the section labels are abbreviated as S, O, A, and P. Fail if one or more SOAP sections are missing, merged in a way that makes them hard to identify, or replaced by a generic report format."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.04,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The note has clearly labeled SOAP sections: \"S - Subjective,\" \"O - Objective,\" \"A - Assessment,\" and \"P - Plan / Follow-up Needs.\" All four required sections are present and identifiable.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v2",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the Subjective section carries forward only the symptoms actually provided in the handoff.",
+          "why_justification": "Inventing symptoms or omitting the reported symptoms would distort the clinical context for the care team.",
+          "tag": "subjective_accuracy",
+          "weight": 0.05,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the Subjective section states that the 55-year-old female patient reports progressive shortness of breath and cough, and does not add unsupported symptoms such as fever, chest pain, hemoptysis, orthopnea, weight loss, or leg swelling. Fail if it omits either progressive shortness of breath or cough, or if it adds new symptoms not present in the case materials."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.05,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The note identifies a 55-year-old female and the Subjective states the patient-reported concern is 'progressive shortness of breath and cough.' It does not add unsupported symptoms; it only notes that other details such as fever or chest pain status were not provided.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v3",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the clinical note identifies the main radiology finding using clinically equivalent wording.",
+          "why_justification": "The moderate right pleural effusion is the key imaging-supported concern that must be carried forward for provider follow-up.",
+          "tag": "primary_radiology_finding",
+          "weight": 0.075,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the Objective or Assessment section identifies the main imaging-supported finding as a moderate-sized right pleural effusion that freely layers on the right-side-down decubitus view, allowing clinically equivalent wording such as 'moderate right pleural fluid collection that layers when lying on the right side.' Fail if it names a different primary finding, omits the right-sided pleural effusion, omits the layering/free-flowing nature, or changes the characterization to small, massive, left-sided, bilateral, or loculated."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.075,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The Objective section explicitly states: 'Moderate-sized right pleural effusion which freely layers on the right-side-down decubitus view.' This matches the required main imaging-supported finding, including right-sided location, moderate size, and free-layering nature.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v4",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the clinical note includes the right lower-lung opacity and appropriately frames it without overdiagnosis.",
+          "why_justification": "Right basilar haziness is part of the authoritative imaging findings and is relevant to the respiratory assessment.",
+          "tag": "secondary_radiology_finding",
+          "weight": 0.055,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the Objective or Assessment section includes hazy opacification at the right lung base and frames it as likely related to layering pleural fluid and/or atelectatic change, using equivalent wording such as 'right basilar haziness likely from fluid and atelectasis.' Fail if the note omits the right lung-base haziness or converts it into an unsupported diagnosis such as pneumonia, pulmonary edema, cancer, or infection."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.055,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The note includes the required finding in the Objective section: 'Hazy opacification in the right lung base; report language favors a combination of layering pleural fluid and atelectasis.' The Assessment also references 'right basilar hazy opacity/atelectatic component,' and it does not convert this into an unsupported diagnosis such as pneumonia, edema, cancer, or infection.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v5",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the clinical note carries forward the negative pneumothorax finding.",
+          "why_justification": "Documenting no pneumothorax helps distinguish pleural fluid from an acute air leak or collapsed-lung concern.",
+          "tag": "negative_finding",
+          "weight": 0.04,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the clinical note states that imaging showed no pneumothorax, using equivalent wording such as 'no pleural air leak' or 'no collapsed lung from air in the pleural space.' Fail if the note omits this negative finding or suggests a pneumothorax is present or cannot be excluded."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.04,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The note explicitly states the negative imaging finding twice: under Objective, 'No pneumothorax,' and under Assessment, 'No pneumothorax is reported on imaging.' This satisfies the rubric requirement.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v6",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether two additional imaging findings are included without unsupported clinical significance labels or history expansion.",
+          "why_justification": "Mild cardiopericardial silhouette enlargement and median sternotomy changes should be documented as imaging observations, not turned into unsupported history or dismissed as incidental.",
+          "tag": "source_boundaries",
+          "weight": 0.065,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the note includes both mild enlargement of the cardiopericardial silhouette and median sternotomy changes as imaging-supported findings requiring provider correlation, while avoiding unsupported labels or expansions. Fail if either finding is omitted, or if the note describes either finding as incidental, chronic, expected postoperative change, known cardiac history, prior coronary bypass, valve surgery, heart failure, pericardial disease, or any other specific cardiac or surgical history not stated in the available materials."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.065,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The note explicitly includes both imaging findings—\"Mild enlargement of the cardiopericardial silhouette\" and \"Median sternotomy changes\"—and later states that the available materials do not establish the patient’s cardiac history, baseline heart size, or the clinical significance of these findings, appropriately signaling need for provider correlation. It does not add unsupported labels such as chronic/incidental change, prior CABG, valve surgery, heart failure, pericardial disease, or other unstated cardiac/surgical history.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v7",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the Assessment connects the imaging finding to symptoms while preserving clinical uncertainty.",
+          "why_justification": "The note must help the team understand symptom relevance without falsely proving a single medical cause from imaging alone.",
+          "tag": "assessment_reasoning",
+          "weight": 0.075,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the Assessment states that a moderate right pleural effusion can limit right lower-lung expansion and may contribute to progressive shortness of breath and cough, while also stating or clearly implying that imaging alone does not prove it is the sole cause of symptoms. Fail if the note says the effusion definitively explains all symptoms, fails to connect the finding to breathing mechanics, or gives no uncertainty or provider-correlation language."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.075,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The Assessment states that pleural fluid around the right lung can reduce expansion, especially at the right base, and may contribute to progressive shortness of breath and cough. It also explicitly says, \"Imaging alone does not prove this is the sole cause of symptoms,\" providing the required uncertainty/provider-correlation language.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v8",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the Plan gives specific nursing follow-up actions instead of generic monitoring language.",
+          "why_justification": "A SOAP plan for a symptomatic respiratory imaging finding must give actionable bedside monitoring and escalation items while leaving treatment decisions to the provider.",
+          "tag": "follow_up_plan",
+          "weight": 0.085,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the Plan includes prompt provider follow-up or provider notification for the symptomatic moderate right pleural effusion and at least four concrete nursing assessment, comfort, or escalation actions chosen from: assess work of breathing; assess ability to speak full sentences; monitor respiratory rate or respiratory effort if available; monitor oxygen saturation or oxygenation if available; assess chest pain; assess cyanosis, confusion, or decreased alertness; position upright or elevate the head of bed for comfort; reassess cough or shortness-of-breath progression; document and escalate worsening symptoms. Fail if the Plan only says to monitor respiratory status or symptoms in general terms, includes fewer than four concrete bedside actions, omits provider follow-up, or orders unsupported treatments such as thoracentesis, diuretics, antibiotics, chest tube placement, or home oxygen."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.085,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The Plan explicitly includes provider follow-up: “Promptly notify or confirm provider awareness” of the symptomatic moderate right pleural effusion. It also lists at least four concrete bedside actions from the rubric: assess work of breathing, assess ability to speak comfortably/full sentences, obtain oxygenation measurements if available, position upright/head-of-bed elevation for comfort, and urgently escalate for worsening breathing, chest pain, blue lips/face, or confusion. It does not order unsupported treatments.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v9",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the clinical note stays within the facts available in the case materials.",
+          "why_justification": "Unsupported vitals, labs, medications, allergies, and comorbidities would create unsafe false clinical documentation.",
+          "tag": "source_boundaries",
+          "weight": 0.06,
+          "grading_role": "process",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the clinical note either avoids mentioning unavailable data or explicitly marks unavailable items as unknown, including vital signs, oxygen saturation values, laboratory results, medication list, allergies, smoking history, comorbidities, and provider treatment orders. Fail if it invents any specific value or fact such as SpO2 92%, respiratory rate, fever, WBC count, BNP, furosemide, antibiotics, anticoagulants, allergies, COPD, cancer, heart failure, or a completed procedure."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.06,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The note explicitly marks key unavailable items as not provided/not added: vital signs, oxygen saturation, laboratory results, medications, allergies, provider treatment orders, and comorbidities. Smoking history is not introduced. It does not invent any specific unsupported values or facts such as SpO2, respiratory rate, fever, WBC/BNP, medications, allergies, COPD/cancer/heart failure, or any completed procedure not supported by the imaging text.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v10",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the note distinguishes imaging-supported observations from open clinical questions.",
+          "why_justification": "The requested note must prevent diagnostic anchoring by separating what the X-ray supports from what still requires provider evaluation.",
+          "tag": "clinical_uncertainty",
+          "weight": 0.04,
+          "grading_role": "mixed",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/clinical_note.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the clinical note substantively separates imaging-supported findings from clinical uncertainties requiring provider follow-up, including at least the cause of the effusion, physiologic impact or oxygenation status, and treatment or next-step decisions. Fail if the note presents the radiology findings and unresolved clinical questions as if they are all established facts, or if it does not flag any provider-follow-up uncertainties."
+          }
+        }
+      },
+      "result": {
+        "success": false,
+        "expected": true,
+        "actual": false,
+        "effective_weight": 0.04,
+        "error": null,
+        "reason": "assertion failed",
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 0,
+          "false_count": 1,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": false,
+              "justification": "The note does separate imaging findings from some uncertainties: it states no oxygenation/vital data were provided and defers treatment/next steps to provider clinical correlation. However, it does not explicitly flag the etiology/cause of the pleural effusion as unresolved and needing provider follow-up, which the rubric requires along with physiologic impact/oxygenation status and treatment decisions.",
+              "error": null
+            }
+          ],
+          "source_output_preview": "{\"text\": \"Nursing SOAP Note - Respiratory Imaging Follow-up\\n Case RNP-7A9C | Source-bounded documentation based on attached handoff and radiology case packet\\nPatient\\n55-year-old female\\nReason for note\\nProgressive shortness of breath and cough after chest imaging review\\nDocumentation\\nboundary\\nNo vital signs, oxygen saturation values, laboratory results, medication list, allergy list,\\nor provider treatment orders were included in the source materials.\\nS - Subjective\\n- Patient-reported concern available in the handoff: progressive shortness of breath and cough.\\n- No additional symptom descriptors, duration details, fever status, chest pain status, baseline respiratory history, or\\nhome medication information were provided in the attached materials.\\nO - Objective\\nAuthoritative chest imaging findings:\\n- Moderate-sized right pleural effusion which freely layers on the right-side-down decubitus view.\\n- Hazy opacification in the right lung base; report language favors a combination of layering pleural fluid and\\natelectasis.\\n- No pneumothorax.\\n- Mild enlargement of the cardiopericardial silhouette.\\n- Median sternotomy changes.\\nNo objective bedside measurements such as respiratory rate, oxygen saturation, temperature, lung sounds, laboratory results,\\nintake/output, or response to interventions were present in the supplied materials.\\nA - Assessment\\n- Imaging-supported respiratory concern: moderate right simple pleural effusion with right basilar hazy\\nopacity/atelectatic component.\\n- Symptom relevance: pleural fluid around the right lung can reduce lung expansion, especially at the right base, and\\nmay contribute to progressive shortness of breath and cough. Imaging alone does not prove this is the sole cause of\\nsymptoms.\\n- No pneumothorax is reported on imaging.\\n- Mild cardiopericardial silhouette enlargement and median sternotomy changes are noted on imaging; the available\\nmaterials do not establish the patient's cardiac history, baseline heart s"
+        }
+      }
+    },
+    {
+      "name": "v11",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the patient handout is individualized to the affected side and explains the location of pleural fluid in plain language.",
+          "why_justification": "The patient-facing explanation should not become a generic pleural-effusion handout that omits the patient's right-sided imaging finding.",
+          "tag": "patient_plain_language",
+          "weight": 0.075,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/patient_education_summary.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the patient summary tells the patient that the imaging showed fluid around the right lung or right side, and explains that this fluid is in the space around the outside of the lung between the lung and chest wall, not inside the breathing tubes or airways. Fail if the handout only says 'one lung,' 'a lung,' or gives a generic pleural-effusion explanation without naming the right side, or if it implies the airways are filling with fluid."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.075,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The summary explicitly says the imaging showed 'a moderate amount of fluid around the right lung' and explains pleural effusion as fluid 'in the thin space around the outside of the lung, between the lung and the chest wall,' adding that it is 'not fluid filling the breathing tubes.'",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v12",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the patient handout explains the symptom mechanism in understandable terms.",
+          "why_justification": "The patient needs to understand why the right pleural fluid can relate to shortness of breath and cough without being told an unsupported certainty.",
+          "tag": "patient_symptom_relevance",
+          "weight": 0.075,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/patient_education_summary.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the patient summary explains that fluid around the right lung can press on the lung, reduce how fully it expands, reduce how much air gets in, and make breathing feel harder or contribute to cough, using cautious language such as 'can' or 'may.' Fail if it does not explain lung expansion, does not connect the finding to shortness of breath or cough, omits cautious language, or says the fluid is definitely the only cause of symptoms."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.075,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The summary explains that fluid around the right lung 'can press inward,' leaving it 'less room to open' when breathing in, which conveys reduced expansion/air entry; it says breathing 'can take more effort' and 'coughing can happen,' uses cautious language ('may,' 'can'), and explicitly says the imaging does not prove this is the only cause of symptoms.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v13",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the required patient-facing diagram is present and clinically meaningful based on extracted labels.",
+          "why_justification": "The patient summary explicitly requires a simple labeled diagram showing how fluid around the lung limits expansion and oxygen exchange.",
+          "tag": "patient_diagram",
+          "weight": 0.09,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/patient_education_summary.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the extracted patient summary includes a labeled diagram or text-rendered diagram with labels that identify the lung, the chest wall or rib cage, pleural space or pleural fluid around the lung, reduced or compressed lung expansion, and a breathing or oxygen-exchange effect. Fail if there is no diagram, if the diagram has no meaningful labels, or if the labels do not show how fluid around the lung limits expansion and affects breathing or oxygen exchange."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.09,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The summary includes a labeled text-rendered diagram under 'Simple diagram: fluid limits expansion' with 'Chest wall,' 'Right lung,' 'Fluid in pleural space (around lung),' 'Less room to expand,' and breathing/oxygen effects: 'Breathing can feel harder because less lung opens' and 'Oxygen exchange may be less efficient.'",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v14",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the patient handout contains clear urgent-care safety triggers.",
+          "why_justification": "Patient education is incomplete without clear escalation boundaries for worsening respiratory symptoms.",
+          "tag": "patient_safety",
+          "weight": 0.065,
+          "grading_role": "outcome",
+          "importance": "core"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/patient_education_summary.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the patient summary includes specific urgent or emergency warning signs, including at least three of the following: suddenly worse shortness of breath, trouble breathing at rest, inability to speak full sentences, chest pain, blue lips or face, confusion, fainting, or rapidly worsening symptoms. Fail if it only says to follow up with a provider without naming concrete warning signs."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.065,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The summary names multiple concrete urgent/emergency warning signs: 'suddenly worse breathing or trouble resting comfortably,' 'inability to speak full sentences,' 'chest pain,' 'blue lips or face,' and 'confusion, fainting, or feeling like you may pass out.' This exceeds the rubric’s requirement of at least three specific warning signs.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v15",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the patient summary gives appropriate next-step boundaries without unsupported treatment instructions.",
+          "why_justification": "The handout should guide follow-up while not promising diagnostic conclusions, procedures, or medications absent from the case materials.",
+          "tag": "patient_follow_up",
+          "weight": 0.045,
+          "grading_role": "outcome",
+          "importance": "secondary"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/patient_education_summary.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the patient summary states that the X-ray does not include the full clinical picture and that the provider or care team should decide next steps using the exam, symptoms, oxygen levels, vital signs, labs, or other clinical information. Fail if it promises a specific treatment or procedure, tells the patient to start or stop medication, or implies that the X-ray alone determines the final treatment plan."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.045,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The summary says follow-up with the provider/care team is needed to decide next steps and explicitly notes the imaging does not include the full picture: it lacks oxygen numbers and lab results, and it does not replace the provider’s exam or care plan. It does not promise a specific treatment/procedure, give medication instructions, or imply the X-ray alone determines the final plan.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v16",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the patient summary is concise, readable, and written for a lay audience.",
+          "why_justification": "The requested artifact is patient education, not a technical radiology restatement.",
+          "tag": "patient_readability",
+          "weight": 0.04,
+          "grading_role": "process",
+          "importance": "secondary"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/patient_education_summary.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the patient summary reads like a concise one-page handout for a patient, with short sections, plain words, and no dense clinical-report style. Dense terms such as 'basilar opacification,' 'atelectasis,' 'decubitus view,' and 'cardiopericardial silhouette' must either be omitted because they are unnecessary for patient education or translated into simple language. Fail if the handout reads primarily like a radiology report, a clinician-only note, a multi-page textbook review, or a long list of technical findings with little patient explanation."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.04,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The text reads like a patient handout: it uses short sections ('What the imaging showed,' 'What pleural effusion means,' 'What happens next'), plain-language explanations, and brief symptom/safety guidance. Technical terms are either avoided or translated for patients, e.g., 'atelectasis' is explained as 'a small area of lung not fully open' and 'pneumothorax' as 'no air leak/collapse.' It does not primarily read like a dense radiology report or clinician-only note.",
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "v17",
+      "definition": {
+        "metadata": {
+          "how_justification": "Checks whether the patient-facing artifact avoids benchmark or production-status side content.",
+          "why_justification": "Patient and clinical deliverables should not contain evaluator-facing comments, file-generation status, or other artifacts that would not belong in real documentation.",
+          "tag": "side_effect_control",
+          "weight": 0.025,
+          "grading_role": "process",
+          "importance": "secondary"
+        },
+        "source": {
+          "type": "file",
+          "file": {
+            "type": "pdf",
+            "command": "extract_text",
+            "arguments": {
+              "path": "output/patient_education_summary.pdf"
+            }
+          }
+        },
+        "assertion": {
+          "type": "rubric",
+          "expected": true,
+          "rubric": {
+            "prompt": "Pass if the patient summary contains only patient-facing education and appropriate case-documentation footer content, without conversational status text, benchmark commentary, tool-output notes, JSON-style keys, or instructions to the evaluator. Fail if it includes phrases such as 'deliverable ready,' 'I created,' 'output_variables,' 'verifier,' 'benchmark,' or other evaluator-facing or model-output artifacts that would not belong in a patient handout."
+          }
+        }
+      },
+      "result": {
+        "success": true,
+        "expected": true,
+        "actual": true,
+        "effective_weight": 0.025,
+        "error": null,
+        "reason": null,
+        "evaluation": {
+          "judge_models": [
+            "openai/gpt-5.4"
+          ],
+          "true_count": 1,
+          "false_count": 0,
+          "attempts": [
+            {
+              "model": "openai/gpt-5.4",
+              "verdict": true,
+              "justification": "The extracted text is a patient-facing handout about pleural effusion, symptoms, and when to seek urgent care, and it ends with a case footer ('Source-bounded patient education summary - Case RNP-7A9C'). It contains no conversational/model-output artifacts, benchmark or verifier language, tool notes, JSON-style keys within the handout, or instructions to the evaluator.",
+              "error": null
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

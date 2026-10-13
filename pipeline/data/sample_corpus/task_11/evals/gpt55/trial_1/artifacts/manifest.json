@@ -1,0 +1,14 @@
+[
+  {
+    "source": "/logs/artifacts",
+    "destination": "artifacts",
+    "type": "directory",
+    "status": "empty"
+  },
+  {
+    "source": "/workspace/output",
+    "destination": "artifacts/output",
+    "type": "directory",
+    "status": "ok"
+  }
+]

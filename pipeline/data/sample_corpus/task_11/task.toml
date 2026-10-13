@@ -1,0 +1,21 @@
+version = "1.0"
+artifacts = ["/workspace/output"]
+
+[verifier]
+timeout_sec = 3600.0
+
+[verifier.env]
+OPENAI_API_KEY = "${OPENAI_API_KEY}"
+
+[agent]
+timeout_sec = 14400.0
+
+[environment]
+build_timeout_sec = 900.0
+memory_mb = 4096
+storage_mb = 20480
+allow_internet = true
+skills_dir = "/harbor/skills"
+
+[metadata]
+domain = "Healthcare & Social Assistance"
