@@ -1,0 +1,25 @@
+{
+  "_README": "Maps exported tracker CSVs for `cycle.py fetch`, one config per front. Drop each front's export at cycles/<date>/tracker_<front>.csv (the legacy single-front cycles/<date>/tracker.csv is still read as front=ekw). ready_values = Status-cell values (case-insensitive) that count as ready-to-fetch. fetch writes one 00_fetched/<id>/ per ready task, tagged _row.json['front'], with _source.txt (the link) and _row.json (the full tracker row, so inline Prompt/Rubric and the Expert Solution Link are preserved). svc/intake column names below are placeholders (fuzzy id/status/link detection as fallback) -- no real header export seen yet for those two trackers; replace *_col once one is available.",
+  "fronts": {
+    "ekw": {
+      "id_col": "Task ID",
+      "status_col": "Status",
+      "link_col": "Prompt Source Documents Link",
+      "ready_values": ["ready for eval"],
+      "header_row": 0,
+      "use_gdown": false
+    },
+    "svc": {
+      "_TODO": "placeholder -- confirm real column headers from the SVC Project tracker (19h6CVk_F_vJhGv-xhsAXvw-u3NNRGHCeNAnZMTE6zIM) before relying on this front for real fetches; falls back to fuzzy id/status/link detection until then.",
+      "ready_values": ["ready for eval"],
+      "header_row": 0,
+      "use_gdown": false
+    },
+    "intake": {
+      "_TODO": "placeholder -- confirm real column headers from the Intake form tracker (1lZHs2kfqusUfRUJKXjvlmGKszPwMI6qZkjvEZ-mMn1k) before relying on this front for real fetches; falls back to fuzzy id/status/link detection until then.",
+      "ready_values": ["ready for eval"],
+      "header_row": 0,
+      "use_gdown": false
+    }
+  }
+}

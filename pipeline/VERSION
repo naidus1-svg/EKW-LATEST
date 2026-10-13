@@ -1,0 +1,191 @@
+gdpval-qc v18.6  (canonical — single source of truth)
+spec: specs/gdpval_task_quality_v18.md  (superset; includes input_prompt_leakage)
+reconciled_against_platform: FULL BIDIRECTIONAL SUPERSET 2026-07-20 (see reconcile_2026-07-20 below).
+  All 20 gdpval_qc/*.py + all 9 specs/*.md now BYTE-IDENTICAL to platform/scripts/gdpval_qc
+  (only platform's py.typed marker differs). Prior baseline: x-gdpval-enterprise-workflow @
+  origin/main 0c438c80 (2026-06-29).
+synthesizer_2026-07-20: replaced the synthesizer's numeric top_issues_cap (top-3) with a
+  QUALITATIVE blocking-vs-cosmetic filter — surfaces ALL blocking issues (no cap), filters
+  cosmetic/judge-overcalls into SampleReview.filtered_issues (recorded, not dropped), aware
+  judges over-call (severity is max-aggregated). Grading/verdict UNCHANGED (read all_findings).
+  Contract: Issue.{blocking,classification_reason,forced_blocking}; SampleReview.filtered_issues;
+  reviewer_queue.csv is now ROW-PER-ISSUE (not fixed-width issue_N slots); top_issues_cap parsed
+  but unused (deprecated). Converged prompt (v4) + evidence: experiments/synthesizer-calibration/.
+  Files: v18_synthesizer.py, finding.py, review.py, v18_emitter.py, v18_spec.py. Tests updated.
+  PLATFORM reconcile (merge-safe): the 5 files propagated to platform/scripts/gdpval_qc; platform's
+  data_quality_warnings feature PRESERVED (review field + CSV col + md section). [RESOLVED 2026-07-20:
+  both pending items below are now done — see reconcile_2026-07-20.]
+reconcile_2026-07-20: FULL bidirectional superset merge of pipeline <-> platform/scripts/gdpval_qc
+  (the targeted synthesizer reconcile left broad drift; this closes it). End state: every
+  gdpval_qc/*.py and every specs/*.md is BYTE-IDENTICAL across both copies; both test suites green
+  (pipeline 152 passed / platform 160 passed). Directions merged:
+  PLATFORM -> PIPELINE (features pipeline lacked): (1) data_quality_warnings — FileContent
+    .conversion_status/.conversion_error + _warn_failed_conversions (v18_loader), _collect_conversion_warnings
+    + SampleReview.data_quality_warnings (v18_engine/review), CSV column + "⚠ Data-quality warnings"
+    md section (v18_emitter); (2) metadata _parse_error non-table normalisation + surfacing (v18_loader);
+    (3) multimodal ImageBlock judging + _conversion_note inline degraded-text warning (v18_judge) —
+    kept ON TOP of pipeline's _FIELD_CHAR_LIMITS/30k cap; (4) context_limiter response_token_budget=None
+    -> reserve config.max_tokens; (5) llm_client get_accumulated_usage/reset_accumulated_usage
+    (process-wide cost accumulator) + input+output token reservation + robust retry-exhaustion raise;
+    (6) cli richer accumulated-usage cost report; (7) openai_client/gemini_client None-model guard
+    ordering + finite Gemini timeout(600000ms) + input+output rate reservation (platform was ahead here);
+    (8) v18_verifier_summary _read_first_report _load_object non-dict guard + name_to_class UNION across
+    incomplete reports (platform was ahead; pipeline kept its _CRASH_REWARD/collect_reward_stats).
+  PIPELINE -> PLATFORM (features platform lacked, i.e. the v18.5->v18.6 upgrade): trajectory-QC modules
+    v18_trajectory_digest.py + upstream_deliverables.py, their v18_loader callback wiring +
+    precondition gates (task_has_full_trajectories/eval_runs/is_substantive), _FIELD_CHAR_LIMITS
+    trajectory entries; converters refactor; v18_callbacks (synthetic-marker/headroom/inversion);
+    the whole 18.6 spec (trajectory + input_prompt_leakage/prompt_misleading/prompt_underspecification/
+    synthetic_marker_scan dims) + the other 8 specs.
+  DESIGN CONFLICT resolved by Luiz (pipeline 18.6 wins): verifier_spec_parseable is gated on
+    task_has_verifier in 18.6, so a task with a MISSING/empty verifier.json has all verifier dims
+    skipped and passes QC silently — platform's 18.5 kept it unconditional (+ a test) to catch that.
+    Per Luiz's ruling the documented 18.6 design stands; platform's stale test_v18_spec/test_v18_e2e
+    (incl. test_missing_verifier_is_not_skipped_and_fails_blocking) were replaced with the 18.6
+    versions. KNOWN behavioural consequence: missing verifier.json no longer produces a blocking
+    finding on its own — revisit if that safety net is wanted back.
+  Also added platform's test_context_limiter_budget.py + test_sdk_versions.py into pipeline/tests so
+    pipeline validates the merged budget/SDK features. Backups: pipeline/.recon-backups/ +
+    platform/.recon-backups/ (reconcile-backup-2026-07-20).
+expert_calibration_2026-07-09: reworded verifier gates against expert re-review feedback
+  (Omega Approved-Task QC Action List). Applied to gdpval_task_quality_v18.md AND the
+  variants that carry copies (slim, eval_gates_only, final_qc); backup in specs.backup-*/.
+  FALSE-POSITIVE fixes (expert disagreed w/ Auto-QC): (1) construct_validity + discriminative_power
+  now check the GOLDEN before flagging a 0%/always-fails rubric — golden-passes => legit difficulty,
+  not a broken verifier (task 111 v9); (2) construct_validity: requiring prompt-grounded facts in
+  ANY format is completeness, not over-penalization/format-rigidity (task 116 v2/v8/v9);
+  (3) clarity: soft quantifier ("substantially all") is fine when backed by an enumerated set /
+  objective fallback (task 111 v8); (4) missing_critical: criterion covered across a COMBINATION
+  of rubrics is not a gap (task 111 feasibility) — strengthened with an explicit "name the rubric
+  that would fail a wrong solution" trace; (5) construct_validity: before flagging a rubric as
+  OVER-STRICT / over-specified, check the golden — golden-passes => demanding not over-penalizing
+  (the lever the experts used on task 116); (6) outcome_coverage: a missing side-effect / output-dir
+  check is sev1 polish (accept_with_fixes), not a gating sev2 (Luiz ruling, task 53). ADDED
+  hard-fails (expert agreed): extract_text can't verify live/formula/no-hardcoding claims (task 24
+  v19/v20); advisory wording should/preferably/such-as + broad "materially unsolicited" side-effect
+  language (task 24 v22, task 53); aggregate-only passes when per-item detail required (task 24 memo);
+  output-dir not listed when extra files forbidden + guardrail-only rubric missing positive-quality
+  check (task 53). REVERTED an over-eager "derived facts are completeness" carve-out — it raised the
+  salience of the count issue and REGRESSED task_116 (construct sev2 1/3 -> 3/3); replaced by the
+  golden-over-strict lever (5). input_prompt_leakage unchanged (expert "disagree" was re-review
+  scope, not gate validity). SETTLED state, verified over 3-run passes: task_53 & task_111 stable
+  accepting, task_24 stable reject (leakage); task_48/116 remain a known judgment-boundary flicker
+  (memo restating derived counts) -> route to human, do not tune. Wired: `cycle.py redflags` now
+  defaults to specs/gdpval_slim_qc.md (--spec overrides). Iterate with SINGLE runs.
+strict_contract_relaxation_2026-07-15: NOT APPLIED to this regular QC pipeline — by Luiz's
+  decision, kept OUT of the general specs (it is a task-type-specific loosening that would
+  weaken normal reviews). It exists ONLY in the standalone handoff bundle for another user
+  (bundle specs + KNOWN_ISSUES.md + docs/strict-contract-relaxation-plan.md). The change:
+  relax instruction realism/authenticity gates so a `REQUIRED OUTPUT (STRICT CONTRACT)`
+  section (rigid deliverable/format/section/JSON-key spec, incl. output_variables.json) is
+  treated as eval infrastructure, not a synthetic marker; boundary = "container + section
+  list", one kept floor = a contract restating the substantive answer still fails. SIX prose
+  edits to overall_gdpval_fit + instruction_authenticity (+ intro carve-out), applied only in
+  the bundle. These specs were briefly edited here on 2026-07-15 to build/verify the bundle,
+  then REVERTED to clean from specs.backup-20260715-strict-contract/. Do NOT re-apply to the
+  regular pipeline. If a future need arises, the full diff lives in the bundle's docs.
+professional_complexity_golden_decoupling_2026-07-16: NOT APPLIED to this regular QC
+  pipeline (bundle-only, Luiz). Ships ONLY in the standalone handoff bundle. Fixes the
+  reported ~90% professional_complexity false-positive on the Finance-OTS-Agent format
+  (no golden .xlsx; answer key lives in tests/test_variables.py, rubric in tests/rubric.yaml,
+  model trials in outputs/<model>/). professional_complexity (inputs incl. solution_files,
+  ungated) loses its "golden is strongest signal" when solution_files is empty and misreads
+  LBO/DCF instructions as "pure arithmetic". THREE prose edits to professional_complexity in
+  BOTH bundle specs: (1) judge from instruction+inputs, golden corroborating-only, absence
+  != mechanical; (2) hard-fail narrowed so building a financial/quantitative model from raw
+  filings isn't "arithmetic"/"a formula spelled out"; (3) anti-overcall: an SVA / STRICT
+  CONTRACT / numeric answer key is a scoring mechanism, not a mechanical-task signal. Safe
+  when a golden IS present (behavior unchanged). Verified on golden-absent tracer (task 11096
+  LBO): prof_complexity sev3 -> sev0, judges agree. overall_gdpval_fit shares the dependence
+  but is ignored downstream. Deeper format work (loader reads rubric.yaml+test_variables.py
+  end-to-end) is scoped, NOT built: bundle docs/finance-ots-loader-adaptation-plan.md. Do NOT
+  apply to the regular pipeline. NOTE: the loader currently hard-requires solution/golden_outputs/
+  to EXIST (raises FileNotFoundError) — a one-line optional-binding fix is worth doing regardless.
+trajectory_qc_v18.6_2026-07-17: added trajectory-reliant LLM QC checks (inspired by OpenAI
+  "Separating signal from noise in coding evaluations" — investigator reads model TRAJECTORIES,
+  not just scores). Existing eval gates read only verifier_assertion_summary (pass/fail digest);
+  these read the actual agent trajectories + deliverables under evals/<model>/trial_*/.../agent/ +
+  artifacts/output/. FIVE checks: (E) intermodel_trajectory_consistency [NEW, advisory] — reward
+  ordering vs visible trajectory quality across models + convergent core-rubric failure; owns the
+  CROSS-FAMILY + trajectory-grounded call eval_capability_inversion refuses. (B) prompt_underspecification
+  [NEW, advisory] — a legit rubric requirement the PROMPT never conveyed (silent omission). (D)
+  prompt_misleading [NEW, advisory] — prompt wording actively steers toward a penalised approach
+  (must quote the steering span). (A) construct_validity + (C) discriminative_power [AMENDED] — now
+  also read a sampled failed / passed trial's real deliverable (build_failed/passed_trial_deliverable_digest)
+  as concrete over-strictness / leniency evidence. Clean 3-way locus split: E=verifier wrong,
+  B=prompt silent, D=prompt misleads. New module gdpval_qc/v18_trajectory_digest.py (3 string
+  callbacks mirroring v18_verifier_summary; DROPS observation.content bulk; ~30k digest); callbacks
+  auto-registered in v18_loader; precondition task_has_full_trajectories; _FIELD_CHAR_LIMITS entries
+  (intermodel 60k, deliverables 40k). Tools: tools/build_ablation_corpus.py (joins the k=10/6-model
+  eval drop with the labeled calibration goldens via symlinked evals/), tools/ablation_diff.py,
+  tools/consistency.py. VALIDATED on the 5 labeled calibration tasks (24/48/53/111/116) with the
+  k=10/6-model trajectories: new advisory dims = 0 marginal verdict impact (do-no-harm, proven via
+  compute_verdict); amended blocking A stable on its catches (task_48=2/2/2, task_53=3/3/3);
+  cross-dim convergence (A+E+B all flag task_48) = real defect. B/D wording tightened (evidence bar:
+  B needs a 4-point checklist, D must quote the steering span) — cut noise 8->4 swings, verdict flaps
+  2->1 task; residual task_116 D flap is the documented judgment-boundary (route to human). FOLDED
+  into ALL default QC specs (Luiz, 2026-07-17: "all default QC calls should use these"):
+  gdpval_task_quality_v18.md (cmd `qc`, now 30 dims), gdpval_final_qc.md (== v18.6, 12 dims), and
+  gdpval_slim_qc.md (cmd `redflags` default, 14 dims) all carry the 5 checks. The checks are
+  self-gating: E/B/D applies_when task_has_full_trajectories (needs >=2 models with agent/trajectory.json)
+  and A/C's deliverable digests return None without artifacts/output — so bundle-time `qc` (no
+  trajectories yet) is unaffected; they only fire once a corpus has trajectories. NOT promoted to
+  blocking (E/B/D stay advisory; their borderline swings would destabilise verdicts if they gated).
+  Reference spec kept at specs/gdpval_task_quality_v18_6.md. NEXT: seed calibration/v18_6/ goldens
+  (trajectories kept) from the stable catches; optionally add to eval_gates_only.
+local_patches:
+  - gdpval_qc/converters.py : LibreOffice auto-detect at ~/Applications/LibreOffice.app
+  - gdpval_qc/v18_judge.py  : _MAX_FIELD_CHARS = 30000 (per-file SOURCE text cap) + per-field
+      override _FIELD_CHAR_LIMITS{verifier_spec_json:200000} — the 30k cap was truncating large
+      verifier.json mid-rubric, making judges report phantom "truncated/missing" findings on any
+      rubric >30k (e.g. task_48 @30.7k). Verifier spec now fed whole; source docs still 30k (2026-07-02)
+  - gdpval_qc/context_limiter.py : _TRUNCATION_SAFETY_MARGIN_TOKENS = 2000 subtracted from the
+      Stage-2 PDF-text budget (was targeting limit-response_budget exactly, zero headroom). The
+      per-block "[... N chars omitted ...]" markers (~22 tok each) + _CHARS_PER_TOKEN rounding are
+      unbudgeted, so large multi-PDF samples finished truncation ~65-86 tok OVER the 272k gpt-5.5
+      window and still raised ContextLimitError -> heavy verifier_* dims silently dropped
+      (task_272: two ~6.6MB 10-K PDFs, lost 6/27 dims). Also added explicit gpt-5.5=272000 (was
+      prefix-matching gpt-5). Verified: task_272 re-ran 27/27, 0 ContextLimitError (2026-07-16)
+  - gdpval_qc/context_limiter.py : flat 2000-tok margin (above) proved too thin on a 1M-token
+      window — task_322's two xlsx->PDF conversions (1610 + 2363 pages; degenerate print-area/
+      column-width setup exploded the page count) extract to ~5.5M chars of dense whitespace-
+      padded tabular text; our 4-chars/token estimate under-counts real gemini-3.1-pro-preview
+      tokenization enough that a request "truncated to fit" by our own math still 400'd with
+      "input token count exceeds maximum". Margin now scales with the limit
+      (_truncation_safety_margin_tokens = max(2000, 10% of limit)) instead of a constant that
+      shrinks to irrelevance as the window grows (2026-07-30)
+  - cycle.py bundle : incident tracking + _INCIDENTS.md report; malformed-vs-empty Rubric
+      distinction; raw_decode recovery for trailing-junk rubrics (e.g. stray </verifier> tag);
+      verifier sanity (count<15, weight-sum!=1.0, numbering gaps, outcome<process weight);
+      --only <ids> / --out <dir> for targeted sub-bundles (2026-07-01)
+  - cycle.py evals : merge returned eval trials into task packages -> 03_evals/task_<id>/
+      evals/<model>/trial_*/ (the layout build_verifier_assertion_summary walks) (2026-07-01)
+  - cycle.py qc : default --sample-parallelism 5 --dim-parallelism 4 (CLI default sample=1
+      is far too slow for a full cycle); overridable (2026-07-01)
+  - verifier count gate : now MINIMUM-ONLY (min 6, no upper limit). Was [6,20] in
+      verifier_count_in_range (spec+v18_callbacks) and min-15 in cycle.py _verifier_sanity;
+      both unified to min 6 / no max. max_verifiers:null => unbounded above (2026-07-02)
+  - cycle.py ledger : cross-cycle task registry (cycles/task_ledger.json + .md). Keyed by
+      canonical numeric id (digits), reuses _fingerprint for novelty. Flags repeats,
+      stale-repeats (reappeared with identical content), recurring complaints (same
+      finding dimension in >=2 cycles). `ledger <date>` ingests, `ledger` re-renders (2026-07-01)
+  - gdpval_qc/gemini_client.py : HttpOptions(timeout=None) -> 600_000 ms. timeout=None let a
+      stalled Gemini judge call hang forever (retry logic never fires); one stall froze an
+      all-or-nothing batch for ~50min. Finite ceiling lets stalls raise -> retry (2026-07-01)
+  - specs/gdpval_final_qc.md + cycle.py redflags : final 20%% QC as a v18 SPEC VARIANT
+      (not a parallel tool — the standalone tools/redflags.py was retired). Reuses the v18
+      engine, gate pattern, verdict tiers, and artifact emitter, so it produces the regular
+      artifacts (batch_summary.md, reviewer_queue.csv, batch_review.json). Unlike full `qc`
+      it CONSUMES 03_evals/. Composition: KEEPS the 4 verifier LLM eval-gates (which already
+      read verifier_assertion_summary) + 3 cheap programmatic verifier gates; PROMOTES
+      Verifier Discriminative Power advisory->blocking (gates on core always-pass/always-fail;
+      judge-unreliable deliberately down-weighted — a single flip in k=10 is normal variance,
+      NOT a defect: over-weighting it made every task reject, fixed 2026-07-06); DROPS all
+      task-design + solution gates; ADDS two programmatic run-based gates
+      (check_eval_reward_headroom = ceiling>=0.90 structural; check_eval_capability_inversion
+      = stronger model below weaker within-family structural). New precondition
+      task_has_eval_runs; shared collector v18_verifier_summary.collect_reward_stats. Run:
+      `cycle.py redflags <date>` (alias for qc --spec gdpval_final_qc.md) (2026-07-06)
+invoke: pipeline/.venv/bin/python -m gdpval_qc.cli --spec specs/gdpval_task_quality_v18.md --corpus <evals> --output-dir <out>
+spec variants (in specs/): gdpval_task_quality_v18_no_eval_gates.md ; (eval-gates-only / visual-only as needed)
+to update: diff pipeline/ against platform/scripts/gdpval_qc, re-apply local_patches, bump this file.

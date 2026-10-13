@@ -1,0 +1,8 @@
+You are the registered nurse covering a med-surg observation patient whose care team needs concise documentation after chest imaging was reviewed. The patient is a 55-year-old female reporting progressive shortness of breath and cough. The provider has not yet documented a final treatment decision, so your job is to prepare nursing-facing documentation that accurately carries forward the clinically important imaging findings and a patient-facing explanation that can support bedside teaching.
+
+Using the attached radiology case packet, nursing handoff note, and patient-teaching expectations, prepare documentation that helps the care team understand the imaging-supported concern and helps the patient understand why fluid around the lung may relate to breathing symptoms. Treat the finalized written radiology report as authoritative if it conflicts with image appearance. Do not add unsupported vital signs, oxygen values, laboratory results, medications, allergies, comorbidities, prior history beyond the imaging evidence, or treatment decisions. Clearly separate imaging-supported findings from clinical uncertainties that require provider follow-up.
+
+Produce the following deliverables in `/workspace/output/`:
+
+- `clinical_note.pdf` — a SOAP-format nursing note for the medical file summarizing the reported symptoms, key imaging findings, nursing assessment boundaries, and provider follow-up needs.
+- `patient_education_summary.pdf` — a one-page patient-facing explanation of pleural effusion, how fluid around the lung can contribute to shortness of breath and cough, when to seek urgent help, and a simple labeled diagram showing how fluid around the lung limits expansion and oxygen exchange.

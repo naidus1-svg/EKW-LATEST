@@ -1,0 +1,23 @@
+{
+ "SVC-PC-60-1-0": {
+  "rule": "rubric Input Manifest exact paths",
+  "files": [
+   "System Exports - 2021Q4/workday/Worker_Report.csv",
+   "Company Shared Drive/HR/_Restricted/Compensation/Year_End_Headcount_Report.xlsx",
+   "Company Shared Drive/Legal/Compliance/Annual_Compliance_Checklist.docx",
+   "Company Shared Drive/HR/Policies/Employee_Handbook_2021.docx",
+   "Company Shared Drive/HR/Policies/Remote_Work_Policy.docx",
+   "Company Shared Drive/HR/Policies/PTO_Policy.docx",
+   "Company Shared Drive/HR/Policies/Code_of_Conduct.docx",
+   "Company Shared Drive/HR/Benefits/Benefits_Overview_2021.docx",
+   "Company Shared Drive/Legal/CIIAA_Cirrus_Sleep_Form.pdf",
+   "Company Shared Drive/Legal/Workers_Comp_2021.pdf",
+   "Company Shared Drive/Operations/IT/Security/Security_Policy.docx",
+   "Company Shared Drive/HR/Onboarding/Onboarding_Checklist_Template.docx"
+  ]
+ },
+ "SVC-PC-4-4-0": {
+  "rule": "full corpus (sibling SVC-PC-4-2-0 precedent)",
+  "files": 1182
+ }
+}

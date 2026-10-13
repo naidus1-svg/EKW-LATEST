@@ -1,0 +1,70 @@
+SVC-PC/EKW DataOS QC project - fix row-34 word_ban_false_trigger_check.py (THIRD attempt - the
+first two did real investigation but never touched the checker file itself and never
+committed a fix. Your FIRST action must be editing the real file, not more analysis.)
+
+DO THIS FIRST, before anything else: open
+`C:\wt_ekwqc\round62-row34-fpfix\deterministic-checks\word_ban_false_trigger_check.py` and find
+the negation-clustering detection logic (the function that decides a ban word is "false
+triggered" - it currently looks for a negation cue within a wide character window, roughly 120
+characters, of the ban word). Two prior attempts already confirmed the mechanism and the exact
+false positives; you do not need to re-derive this, just read the current file to find the
+real function and line numbers, then make the change below.
+
+THE CHANGE: tighten the negation-to-ban-word proximity check. Currently a negation word
+(never/no/none/without/etc.) anywhere within ~120 characters of a ban word counts as a
+"prohibition." That is too loose - it matches "never delivered a scorecard" (negation is 2
+words from "delivered", nowhere near "scorecard") the same as "no internal grading" (negation
+is directly adjacent to the ban word). Change the check so the negation word must be
+IMMEDIATELY adjacent to the ban word (the ban word directly follows the negation word, or
+follows it after at most 1-2 intervening adjective/determiner tokens, or is part of a short
+comma-separated list directly after the negation word - e.g. "no grading, rubric, or
+self-scoring content" should still match: "no" -> "grading" is adjacent). Do NOT just shrink
+the character window (e.g. 120 to 40) as a lazy substitute - measure token distance between the
+negation word and the ban word specifically, not overall character distance to anything in the
+sentence.
+
+Verify your change against these BEFORE finishing (write the two lists below into your commit
+message or the report, with pass/fail for each):
+
+MUST STOP FIRING (false positives, confirmed by an independent review):
+- SVC-PC-31-0-0/r076: "Declines to score items that were never planned for as forecasting
+  misses. Expected: Unplanned items are excluded from the accuracy score."
+- SVC-PC-70-6-0/tp03: "Grounds the contractual need in Apex's track record (never delivered a
+  scorecard). Expected: Apex delivered no scorecard all year."
+- SVC-PC-15-3-0/e11 (read its real text from
+  `C:\ekwqc\repo\pipeline\data\svc_pc_qc\03_dataos_ready\SVC-PC-15-3-0\tests\deliverables_*\
+  judge.toml`, criterion e11)
+- SVC-PC-58-0-0/c08: "Initiatives are ranked by descending weighted score with no inversions.
+  Expected: Score column non-increasing down the ranks (0 inversions); a sequence whose scores
+  read 64, 68, 74 downward fails."
+
+MUST KEEP FIRING (true positives - these must still trigger after your change):
+- SVC-PC-14-1-0/r-23: "NO internal grading, rubric, or self-scoring content"
+- SVC-PC-52-3-0/f5, SVC-PC-52-5-0/g7, SVC-PC-38-6-0/g4: "No scoring, grading, benchmark or
+  model-name language appears"
+- SVC-PC-77-0-0/c18: "Neither artifact contains grading, rubric, scoring or self-assessment"
+- SVC-PC-66-2-0/e4 (read its real text)
+
+HOW TO CHECK QUICKLY: after editing, run
+`python word_ban_false_trigger_check.py C:\ekwqc\repo\pipeline\data\svc_pc_qc\03_dataos_ready
+--task SVC-PC-31-0-0 --task SVC-PC-70-6-0 --task SVC-PC-15-3-0 --task SVC-PC-58-0-0 --task
+SVC-PC-14-1-0 --task SVC-PC-52-3-0 --task SVC-PC-52-5-0 --task SVC-PC-38-6-0 --task
+SVC-PC-77-0-0 --task SVC-PC-66-2-0` from `C:\wt_ekwqc\round62-row34-fpfix\deterministic-checks`
+and read the real output - the first 4 tasks should show no hard finding for the named
+criterion, the last 6 should still show one.
+
+COMMIT AFTER THIS 10-TASK CHECK PASSES - do not wait until the full corpus run and spot-check
+are also done. Commit message: what changed, the before/after for these 10 tasks. Only AFTER
+that commit exists, if you have room left, do the fuller verification (full 600-task SVC-PC
+run, EKW run, 15-task spot-check of the new fail set) and commit that as a SECOND commit with
+a report at `ROUND62-ROW34-FPFIX-REPORT.md`. A commit with just the 10-task check is a
+complete, acceptable deliverable on its own if you run out of room for the rest - an
+uncommitted fix, however thoroughly verified in your own head, is not.
+
+REAL FILE PATHS:
+- The checker: `C:\wt_ekwqc\round62-row34-fpfix\deterministic-checks\word_ban_false_trigger_check.py`.
+- Real live corpus (git-untracked): `C:\ekwqc\repo\pipeline\data\svc_pc_qc\03_dataos_ready\<TASK-ID>\`.
+
+Do NOT push. Do NOT add any AI attribution to any commit (no Co-Authored-By, no "Generated
+with", no robot emoji, no mention of Claude or Anthropic) - hard rule on this project. Avoid em
+dashes; use a hyphen or rephrase.

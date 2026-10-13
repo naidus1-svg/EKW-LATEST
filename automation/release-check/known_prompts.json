@@ -1,0 +1,173 @@
+{
+ "source": "work/trial3a/dl and dl_copies verification jsons, turns[0].prompt stripped, sha256",
+ "prompts": {
+  "0930d85b4e760bd6606dd7367b150a08c0414c3a7a6dabdd60ec64f580c55459": {
+   "saved_prompt_id": 536,
+   "name": "pq_R4_V10_2026-10-07",
+   "n_seen": 64,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    536
+   ]
+  },
+  "48d0b791103a0e0716cd09a2a392547cb99e931f8c501f1cb230087933340563": {
+   "saved_prompt_id": null,
+   "name": null,
+   "n_seen": 88,
+   "n_seen_with_null_saved_prompt": 88,
+   "chars": 0,
+   "ids_seen": []
+  },
+  "6d2fb9be90edeb553d565b72a96ce93220cab2bda9227186853983398fe74944": {
+   "saved_prompt_id": 472,
+   "name": "pq_ext12_no_weight_floor_2026-10-06",
+   "n_seen": 72,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    472
+   ]
+  },
+  "bd28633cba8ddbe8d66146bde6ccad6ed53d330e37af15e51279a9d1137a4f91": {
+   "saved_prompt_id": 145,
+   "name": "Latest_comprehensive",
+   "n_seen": 14,
+   "n_seen_with_null_saved_prompt": 12,
+   "chars": 0,
+   "ids_seen": [
+    145
+   ]
+  },
+  "58f2c514fe8d48cd77e10b0c09f0e1a92858324f2e2f532689bbd67c8c2419f9": {
+   "saved_prompt_id": 557,
+   "name": "answer-check-v11",
+   "n_seen": 88,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    557
+   ]
+  },
+  "e391b1030d1d29a2eda48fffa57568d76a90896884cd66cd381ce7c86b7824ed": {
+   "saved_prompt_id": 431,
+   "name": "Comprehensive_v3_pipeline_quality_re-derive_cascade_NOP_2026-10-03",
+   "n_seen": 176,
+   "n_seen_with_null_saved_prompt": 26,
+   "chars": 0,
+   "ids_seen": [
+    431
+   ]
+  },
+  "b6e8361f83f8ff0d7078ec3166a349c12b44fd90ba11d532f2f6efeaddbebb54": {
+   "saved_prompt_id": 537,
+   "name": "pq_R2_opus_R2_2026-10-07",
+   "n_seen": 35,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    537
+   ]
+  },
+  "3db91c4c8a046513c02967e72481ce8f6931eb7cace9f82544131750fa648330": {
+   "saved_prompt_id": 541,
+   "name": "pq_R6_opus_R6_2026-10-07",
+   "n_seen": 12,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    541
+   ]
+  },
+  "e5fcd339164aa77b992f93c0ad71e762b9bbf8eca65abc1fc79ceecabbfb33fe": {
+   "saved_prompt_id": 540,
+   "name": "pq_R5_opus_R5_2026-10-07",
+   "n_seen": 12,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    540
+   ]
+  },
+  "0b9347157fa86181b25e7f5023494ba8c66250cf62ea64a3cc82e5fd6ada17bd": {
+   "saved_prompt_id": 429,
+   "name": "Narrow TFRL-style review (pipeline quality, 2026-10-03)",
+   "n_seen": 24,
+   "n_seen_with_null_saved_prompt": 18,
+   "chars": 0,
+   "ids_seen": [
+    429
+   ]
+  },
+  "280806ce73782094c0e67f5069ea6ca26945b62fbedde1fe397ec47b75f3e1a8": {
+   "saved_prompt_id": 535,
+   "name": "pq_R3_R3_202921_2026-10-07",
+   "n_seen": 1,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    535
+   ]
+  },
+  "0bcc4c912e444f6fc35eefcd2088a5960d66190c6e385aaf9991b0a91e9f9bb1": {
+   "saved_prompt_id": 525,
+   "name": "pq_R3_R3_194027_2026-10-07",
+   "n_seen": 1,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    525
+   ]
+  },
+  "edeb25af237fdb1acf8e5348d6554991bf9aa92f73578d5700dc808beeb8bdff": {
+   "saved_prompt_id": 532,
+   "name": "pq_R3_R3_201933_2026-10-07",
+   "n_seen": 1,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    532
+   ]
+  },
+  "2323b347cfbc891129bb6dd53be89b6bd818fad90a101dcb04cbe807a096eea6": {
+   "saved_prompt_id": 531,
+   "name": "pq_R3_R3_201242_2026-10-07",
+   "n_seen": 1,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    531
+   ]
+  },
+  "d491fe11c4e2d5b9c12503f2d8a2dbf0e8031bc126bbfac00bd711e2076888e1": {
+   "saved_prompt_id": 534,
+   "name": "pq_R3_R3_202362_2026-10-07",
+   "n_seen": 1,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    534
+   ]
+  },
+  "94c38d84b958b04904c8cff90e21b9db8f7443aa1ca6249ce43a02a769292e3e": {
+   "saved_prompt_id": 533,
+   "name": "pq_R3_R3_202184_2026-10-07",
+   "n_seen": 1,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    533
+   ]
+  },
+  "60a90e942ab2e56abd7fb951f4184c80abb89cc4ac2bbc37899241186890c8fc": {
+   "saved_prompt_id": 530,
+   "name": "pq_R3_R3_200352_2026-10-07",
+   "n_seen": 1,
+   "n_seen_with_null_saved_prompt": 0,
+   "chars": 0,
+   "ids_seen": [
+    530
+   ]
+  }
+ }
+}
